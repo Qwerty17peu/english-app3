@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>English Kids PRO</title>
+<meta name="theme-color" content="#4CAF50" />
+<style>
+  body {margin:0;font-family: Arial, sans-serif;background:#f0f4f9;color:#0f172a;}
+  .app {max-width:420px;margin:auto;padding:15px;}
+  .card {background:#fff;padding:14px;border-radius:18px;margin-bottom:12px;box-shadow:0 6px 16px rgba(0,0,0,.08);}
+  .title {font-size:22px;font-weight:800;margin:0 0 6px;}
+  .sub {color:#64748b;font-size:14px;margin-bottom:8px;}
+  .row {display:flex;gap:10px;align-items:center;justify-content:space-between;}
+  button {width:100%;padding:12px;border:none;border-radius:12px;background:#4CAF50;color:#fff;font-size:16px;margin-top:8px;}
+  .ghost {background:#fff;color:#0f172a;border:1px solid #e2e8f0;}
+  .chip {display:inline-block;background:#ecfdf5;color:#065f46;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:700;}
+  .word {font-size:22px;font-weight:800;margin-bottom:4px;}
+  img {width:100%;border-radius:12px;margin:6px 0;}
+  .progress {height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin:10px 0;}
+  .progress > div {height:100%;background:#4CAF50;width:0;}
+  input {width:100%;padding:12px;border-radius:12px;border:1px solid #e2e8f0;font-size:16px;}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+const lessons = [
+  { title:"Цифры 1–10", words:[
+    {en:"one",ru:"один",img:"https://img.icons8.com/color/96/1.png"},
+    {en:"two",ru:"два",img:"https://img.icons8.com/color/96/2.png"},
+    {en:"three",ru:"три",img:"https://img.icons8.com/color/96/3.png"},
+    {en:"four",ru:"четыре",img:"https://img.icons8.com/color/96/4.png"},
+    {en:"five",ru:"пять",img:"https://img.icons8.com/color/96/5.png"}
+  ]},
+  { title:"Животные", words:[
+    {en:"cat",ru:"кот",img:"https://img.icons8.com/color/96/cat.png"},
+    {en:"dog",ru:"собака",img:"https://img.icons8.com/color/96/dog.png"}
+  ]}
+];
+
+let state={screen:"home",lesson:null,score:parseInt(localStorage.getItem("score")||"0")};
+
+function speak(t){let u=new SpeechSynthesisUtterance(t);u.lang="en-US";speechSynthesis.speak(u);}
+
+function render(){
+let app=document.getElementById("app");
+if(state.screen==="home"){
+app.innerHTML=`<div class="card"><div class="title">English Kids</div><div>⭐ ${state.score}</div></div>`+
+lessons.map((l,i)=>`<div class="card" onclick="openLesson(${i})">${l.title}</div>`).join("");
+}
+if(state.screen==="lesson"){
+let l=lessons[state.lesson];
+app.innerHTML=`<button onclick="home()">Назад</button><h2>${l.title}</h2>`+
+l.words.map(w=>`<div class="card"><div class="word">${w.en}</div><img src="${w.img}"><div>${w.ru}</div><button onclick="speak('${w.en}')">🔊</button></div>`).join("")+
+`<button onclick="test()">Тест</button>`;
+}
+if(state.screen==="test"){
+let w=lessons[state.lesson].words[Math.floor(Math.random()*lessons[state.lesson].words.length)];
+app.innerHTML=`<div class="card"><div class="word">${w.en}</div><input id="a"><button onclick="check('${w.ru}')">OK</button></div>`;
+}
+}
+
+function openLesson(i){state.lesson=i;state.screen="lesson";render();}
+function home(){state.screen="home";render();}
+function test(){state.screen="test";render();}
+function check(c){
+let v=document.getElementById("a").value.toLowerCase();
+if(v===c){state.score++;localStorage.setItem("score",state.score);alert("Правильно");}else{alert("Правильно: "+c);}
+home();
+}
+
+render();
+</script>
+</body>
+</html>
