@@ -8,50 +8,75 @@
 <style>
 body {
   margin:0;
-  font-family: Arial;
-  background:#f0f4f9;
+  font-family: system-ui;
+  background: linear-gradient(180deg,#4facfe,#00f2fe);
 }
 
 .app {
-  max-width:420px;
+  max-width:430px;
   margin:auto;
-  padding:15px;
+  min-height:100vh;
+  padding:16px;
 }
 
 .card {
-  background:#fff;
-  padding:14px;
-  border-radius:16px;
-  margin-bottom:12px;
+  background:white;
+  border-radius:20px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.1);
   text-align:center;
-  box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
 .title {
   font-size:22px;
   font-weight:bold;
-  margin-bottom:10px;
 }
 
 .word {
-  font-size:20px;
+  font-size:26px;
   margin:10px 0;
 }
 
 button {
   width:100%;
-  padding:12px;
+  padding:14px;
   border:none;
-  border-radius:12px;
+  border-radius:14px;
   background:#4CAF50;
   color:white;
   font-size:16px;
   margin-top:10px;
 }
 
+button:active {
+  transform:scale(0.96);
+}
+
 img {
   width:100%;
+  border-radius:14px;
+}
+
+input {
+  width:100%;
+  padding:12px;
   border-radius:12px;
+  border:1px solid #ddd;
+  font-size:16px;
+}
+
+.progress {
+  height:8px;
+  background:#eee;
+  border-radius:10px;
+  margin-top:10px;
+}
+
+.progress div {
+  height:100%;
+  background:#4CAF50;
+  border-radius:10px;
 }
 </style>
 </head>
@@ -63,7 +88,7 @@ img {
 <script>
 const lessons = [
 {
-  title:"Цифры 1–10",
+  title:"Цифры",
   words:[
     {en:"one", ru:"один", img:"https://img.icons8.com/color/96/1.png"},
     {en:"two", ru:"два", img:"https://img.icons8.com/color/96/2.png"},
@@ -84,7 +109,8 @@ const lessons = [
 
 let state = {
   screen:"home",
-  lesson:null
+  lesson:null,
+  score:0
 };
 
 function speak(text){
@@ -99,8 +125,10 @@ function render(){
   if(state.screen==="home"){
     app.innerHTML = `
       <div class="card">
-        <div class="title">Английский 3 класс</div>
+        <div class="title">Английский 🚀</div>
+        <div>Очки: ${state.score}</div>
       </div>
+
       ${lessons.map((l,i)=>`
         <div class="card">
           <button onclick="openLesson(${i})">${l.title}</button>
@@ -114,9 +142,6 @@ function render(){
 
     app.innerHTML = `
       <button onclick="home()">⬅ Назад</button>
-      <div class="card">
-        <div class="title">${l.title}</div>
-      </div>
 
       ${l.words.map(w=>`
         <div class="card">
@@ -124,7 +149,7 @@ function render(){
           <img src="${w.img}">
           <div>${w.ru}</div>
           <button onclick="speak('${w.en}')">🔊 Слушать</button>
-          <button onclick="test()">Тест</button>
+          <button onclick="test()">Играть</button>
         </div>
       `).join("")}
     `;
@@ -134,8 +159,11 @@ function render(){
     let l = lessons[state.lesson];
     let w = l.words[Math.floor(Math.random()*l.words.length)];
 
+    speak(w.en);
+
     app.innerHTML = `
       <button onclick="home()">⬅ Назад</button>
+
       <div class="card">
         <div class="word">${w.en}</div>
         <input id="answer" placeholder="Введите перевод"/>
@@ -165,7 +193,8 @@ function check(correct){
   let val = document.getElementById("answer").value.toLowerCase();
 
   if(val === correct){
-    alert("Молодец!");
+    state.score++;
+    alert("🔥 Молодец!");
   } else {
     alert("Правильно: " + correct);
   }
